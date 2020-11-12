@@ -1,14 +1,20 @@
 package com.example.app_rest_users.entities;
 
+// TODO WIP sample code
+
 //import javax.persistence.Entity;
 //import javax.persistence.GeneratedValue;
 //import javax.persistence.Id;
 
 import lombok.Data;
 
-//@Data
+@Data
 //@Entity
 public class User {
+
+public User(Long id) {
+		this.id = id;
+	}
 
 //	@Id
 //	@GeneratedValue
