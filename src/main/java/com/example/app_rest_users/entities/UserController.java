@@ -1,11 +1,17 @@
 package com.example.app_rest_users.entities;
 
 import java.util.List;
+//import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+//import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,4 +32,80 @@ public class UserController {
 		return repo.findById(id).get();
 	}
 
+	/** POST - Save a User */
+	@PostMapping("/users")
+	void save(@RequestBody User newUser) {
+		// TODO agregar validaciones ? 
+		// por ejemplo : que si existe usuario con mismo correo por ejemplo, sino repite data
+		repo.save(newUser);
+	}
+
+	/** PUT	- Update user with given id, or save it. */
+	@PutMapping("/users/{id}")
+	User saveOrUpdate(@RequestBody User user, @PathVariable Long id) throws Exception {
+		// TODO MID : después de leer un KILO:
+		// - recurso debe estar completo tal cual se obtiene con mismo URI en GET
+		// - puedo retornar 204 (no-content), SIN body confirmando así escritura OK
+		// - puedo retornar body, tal cual con GET
+		// - puedo retornar 409, si falla alguna validación, dando mensaje bien explanatorio
+		//                       por ejemplo si el ID es inválido
+		// - puedo retornar 415, si hay algún error de content-type (raro)
+		// - puedo retornar 201 (created), si recurso no existía
+		// - puedo retornar 200 (ok), si 1) se modificó respuesta, 2) se modificó recurso
+		// 								recurso debe ser modificado tal cual el body recibido, o 
+		// 								el body retornado debe ser modificado tal cual el recurso almacenado
+		
+		if (user.getId() == null) {
+			// si es null, lo permito y se modificaría resultado después de guardar
+			user.setId(id);
+			
+		} else if (!user.getId().equals(id)) {
+			// si son diferentes, conflicto 409 - TODO
+			throw new Exception("TODO 409: Conflicto en campo ID");
+		} 
+		
+		Optional<User> result = repo.findById(id);
+		if (!result.isPresent()) {
+			// Si no existe, una opción sería crearlo ... pero depende del servicio subyacente
+//			System.out.println("NOT present - TODO : retornar 201 created \n\n"); // TODO 201 Created
+//			return repo.save(user);
+			// En este caso el servicio no permite almacenar identificador de usuario, 
+			// por lo que debo retornar un conflicto
+			throw new Exception("TODO 409: Servicio no permite crear con identificador arbitrario ");
+		} else {
+			System.out.println("present\n\n");
+			User userPresent = result.get();
+			userPresent.setName(user.getName());
+			userPresent.setEmail(user.getEmail());
+			userPresent.setPassword(user.getPassword());
+			userPresent.setPhone(user.getPhone());
+			return repo.save(userPresent); // retornar 200 OK ( o void 204, no-content)
+		}
+	}
+
+//	/** PATCH - Update some user fields with given id. */
+//	@PatchMapping("/users/{id}")
+//  void updateField(@RequestBody Map<String, String> updateMap, @PathVariable Long id) {
+//      User user = repo.findById(id).get();
+//      TODO ...
+//  }
+
+	/** DELETE - Delete user with given id. */
+	@DeleteMapping("/users/{id}")
+	void delete (@PathVariable Long id) {
+		repo.deleteById(id);
+	}
+
+	// HEAD
+	// OPTIONS
+	
+	// https://tools.ietf.org/html/rfc7231#section-4.3.4
+	
+	// https://www.w3schools.com/tags/ref_httpmethods.asp
+
+	// https://www.tutorialspoint.com/restful/restful_methods.htm
+	
+	// https://www.restapitutorial.com/lessons/httpmethods.html
+		
+	// https://restfulapi.net/
 }
