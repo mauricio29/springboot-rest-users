@@ -2,6 +2,7 @@ package com.example.app_rest_users.rest;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -31,6 +32,7 @@ public class User {
 	private String name;
 
 	@NonNull
+	@Column(unique = true)
 	private String email;
 
 	@NonNull
