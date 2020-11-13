@@ -1,4 +1,4 @@
-package com.example.app_rest_users.entities;
+package com.example.app_rest_users.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
