@@ -13,12 +13,12 @@
 * $ curl -v -X POST localhost:8080/users \
     -H "Content-type:application/json" \
     -d "{\"name\":\"Bash Name\", \"email\":\"bash@srv.com\",\"password\":\"supersecure\",\"phone\":\"2020\"}"
-	# POST
+	# POST - new user
 
 * $	curl -v -X PUT localhost:8080/users/1 \
 	-H "Content-type:application/json" \
 	-d "{\"id\":\"1\", \"name\":\"Bash Name\", \"email\":\"bash@srv.com\",\"password\":\"newPassword***\",\"phone\":\"2020\"}"
-	# PUT sin ID en body
+	# PUT - without ID field in body
 
 * $	curl -v -X PUT localhost:8080/users/1 \
 	-H "Content-type:application/json" \

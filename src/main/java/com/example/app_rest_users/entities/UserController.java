@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 public class UserController {
 
@@ -25,18 +28,22 @@ public class UserController {
 	/** GET - List all Users. */
 	@GetMapping("/users")
 	List<User> findAll() {
+		log.debug("Returning all USERS");
 		return repo.findAll();
 	}
 
 	/** GET	- Find user with given id. */
 	@GetMapping("/users/{id}")
 	User findOne(@PathVariable Long id) {
+		log.debug("Searching for USER with id = {}", id);
 		return repo.findById(id).get();
 	}
 
 	/** POST - Save a User */
 	@PostMapping("/users")
 	void save(@RequestBody User newUser) {
+		
+		log.debug("Adding new USER with email = {}", newUser.getEmail());
 		// TODO agregar validaciones ? 
 		// por ejemplo : que si existe usuario con mismo correo por ejemplo, sino repite data
 		
@@ -61,6 +68,8 @@ public class UserController {
 		// 								recurso debe ser modificado tal cual el body recibido, o 
 		// 								el body retornado debe ser modificado tal cual el recurso almacenado
 		
+		log.debug("Updating USER with id = {}", id);
+
 		if (user.getId() == null) {
 			// si es null, lo permito y se modificaría resultado después de guardar
 			user.setId(id);
@@ -73,13 +82,13 @@ public class UserController {
 		Optional<User> result = repo.findById(id);
 		if (!result.isPresent()) {
 			// Si no existe, una opción sería crearlo ... pero depende del servicio subyacente
-//			System.out.println("NOT present - TODO : retornar 201 created \n\n"); // TODO 201 Created
+			log.debug("Resource does not exist, creating USER"); // TODO return 201 Created
 //			return repo.save(user);
 			// En este caso el servicio no permite almacenar identificador de usuario, 
 			// por lo que debo retornar un conflicto
 			throw new Exception("TODO 409: Servicio no permite crear con identificador arbitrario ");
 		} else {
-			System.out.println("present\n\n"); // TODO : logs
+			log.debug("resource exists, updating USAR"); // TODO retornar 200 OK ( o void 204, no-content)
 
 			User userPresent = result.get();
 			userPresent.setName(user.getName());
@@ -90,7 +99,7 @@ public class UserController {
 			userPresent.setIsActive(user.getIsActive());
 			userPresent.setModified(new Date(System.currentTimeMillis()));
 
-			return repo.save(userPresent); // retornar 200 OK ( o void 204, no-content)
+			return repo.save(userPresent);
 		}
 	}
 
@@ -98,6 +107,8 @@ public class UserController {
 	@PatchMapping("/users/{id}")
 	User updateField(@RequestBody Map<String, String> updateMap, @PathVariable Long id) throws Exception {
 
+		log.debug("Updating fields of USER with id = {}", id);
+		
 		Optional<User> result = repo.findById(id);
 		
 		// TODO validate or not ? - if id != updateMap.get("id") -> error
@@ -115,7 +126,7 @@ public class UserController {
 			} else {
 				throw new Exception("TODO error 4xx - campos no matchean");
 			}
-			
+
 			// TODO more fields
 			// ...
 
@@ -130,6 +141,9 @@ public class UserController {
 	/** DELETE - Delete user with given id. */
 	@DeleteMapping("/users/{id}")
 	void delete (@PathVariable Long id) {
+		
+		log.debug("Deleting USER with id = {}", id);
+
 		repo.deleteById(id);
 	}
 
