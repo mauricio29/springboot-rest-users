@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.app_rest_users.utils.Utils;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -41,11 +43,21 @@ public class UserController {
 
 	/** POST - Save a User */
 	@PostMapping("/users")
-	void save(@RequestBody User newUser) {
+	void save(@RequestBody User newUser) throws Exception {
 		
 		log.debug("Adding new USER with email = {}", newUser.getEmail());
 		// TODO agregar validaciones ? 
 		// por ejemplo : que si existe usuario con mismo correo por ejemplo, sino repite data
+		
+		if (!Utils.isEmailValid(newUser.getEmail())) {
+			// TODO : return error 4xxx
+			throw new Exception("Invalid email");
+		}
+		
+		if (!Utils.isPasswordValid(newUser.getPassword())) {
+			// TODO : return error 4xxx
+			throw new Exception("Invalid password");
+		}
 		
 		Date currentTime = new Date(System.currentTimeMillis());
 		newUser.setCreated(currentTime);
@@ -108,17 +120,18 @@ public class UserController {
 	User updateField(@RequestBody Map<String, String> updateMap, @PathVariable Long id) throws Exception {
 
 		log.debug("Updating fields of USER with id = {}", id);
-		
+
 		Optional<User> result = repo.findById(id);
-		
+
 		// TODO validate or not ? - if id != updateMap.get("id") -> error
-		// check if fields not suported by patch by present in resurce should be validated
-		
+		// check if fields not suported by patch by present in resurce should be
+		// validated
+
 		if (result.isPresent()) {
 			User patchUser = null;
-			
+
 			patchUser = result.get();
-			
+
 			// better : custom method to update a values
 			String nameValue = updateMap.get("name");
 			if (StringUtils.hasText(nameValue)) {

@@ -24,7 +24,7 @@ public class GreetingSample {
 	}
 
 	@GetMapping("/init")
-	String initH2Database() {
+	String initH2Database() throws Exception {
 		log.debug("Adding sample data to database");
 		controller.save(new User("John", "john@srv.com", "pass_1"));
 		controller.save(new User("Carla", "carla@srv.com", "pass_2"));
