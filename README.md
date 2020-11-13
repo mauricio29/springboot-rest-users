@@ -29,3 +29,8 @@
 	-H "Content-type:application/json" \
 	-d "{\"id\":\"11\", \"name\":\"Bash Name\", \"email\":\"bash@srv.com\",\"password\":\"newPassword***\",\"phone\":\"2020\"}"
 	# PUT con ID diferente en body
+
+* $ curl -v -X PATCH localhost:8080/users/1 \
+	-H "Content-type:application/json" \
+	-d "{\"name\":\"Other Name\"}"
+	# PATCH

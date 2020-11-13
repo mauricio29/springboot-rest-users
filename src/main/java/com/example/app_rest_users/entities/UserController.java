@@ -1,13 +1,15 @@
 package com.example.app_rest_users.entities;
 
 import java.util.List;
+import java.util.Map;
 //import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -83,12 +85,34 @@ public class UserController {
 		}
 	}
 
-//	/** PATCH - Update some user fields with given id. */
-//	@PatchMapping("/users/{id}")
-//  void updateField(@RequestBody Map<String, String> updateMap, @PathVariable Long id) {
-//      User user = repo.findById(id).get();
-//      TODO ...
-//  }
+	/** PATCH - Update some user fields with given id. */
+	@PatchMapping("/users/{id}")
+	User updateField(@RequestBody Map<String, String> updateMap, @PathVariable Long id) throws Exception {
+
+		Optional<User> result = repo.findById(id);
+		
+		// TODO validate or not ? - if id != updateMap.get("id") -> error
+		// check if fields not suported by patch by present in resurce should be validated
+		
+		if (result.isPresent()) {
+			User patchUser = null;
+			
+			patchUser = result.get();
+			
+			// better : custom method to update a values
+			String nameValue = updateMap.get("name");
+			if (StringUtils.hasText(nameValue)) {
+				patchUser.setName(nameValue);
+			} else {
+				throw new Exception("TODO error 4xx - campos no matchean");
+			}
+			
+			// TODO more fields
+			return repo.save(patchUser);
+		} else {
+			throw new Exception("TODO error XXX - NOT FOUND");
+		}
+	}
 
 	/** DELETE - Delete user with given id. */
 	@DeleteMapping("/users/{id}")
