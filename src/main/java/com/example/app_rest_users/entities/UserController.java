@@ -1,8 +1,8 @@
 package com.example.app_rest_users.entities;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
-//import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +39,10 @@ public class UserController {
 	void save(@RequestBody User newUser) {
 		// TODO agregar validaciones ? 
 		// por ejemplo : que si existe usuario con mismo correo por ejemplo, sino repite data
+		
+		Date currentTime = new Date(System.currentTimeMillis());
+		newUser.setCreated(currentTime);
+		newUser.setLastLogin(currentTime);
 		repo.save(newUser);
 	}
 
@@ -75,12 +79,17 @@ public class UserController {
 			// por lo que debo retornar un conflicto
 			throw new Exception("TODO 409: Servicio no permite crear con identificador arbitrario ");
 		} else {
-			System.out.println("present\n\n");
+			System.out.println("present\n\n"); // TODO : logs
+
 			User userPresent = result.get();
 			userPresent.setName(user.getName());
 			userPresent.setEmail(user.getEmail());
 			userPresent.setPassword(user.getPassword());
 			userPresent.setPhone(user.getPhone());
+			
+			userPresent.setIsActive(user.getIsActive());
+			userPresent.setModified(new Date(System.currentTimeMillis()));
+
 			return repo.save(userPresent); // retornar 200 OK ( o void 204, no-content)
 		}
 	}
@@ -108,6 +117,10 @@ public class UserController {
 			}
 			
 			// TODO more fields
+			// ...
+
+			patchUser.setModified(new Date(System.currentTimeMillis()));
+
 			return repo.save(patchUser);
 		} else {
 			throw new Exception("TODO error XXX - NOT FOUND");
@@ -120,16 +133,4 @@ public class UserController {
 		repo.deleteById(id);
 	}
 
-	// HEAD
-	// OPTIONS
-	
-	// https://tools.ietf.org/html/rfc7231#section-4.3.4
-	
-	// https://www.w3schools.com/tags/ref_httpmethods.asp
-
-	// https://www.tutorialspoint.com/restful/restful_methods.htm
-	
-	// https://www.restapitutorial.com/lessons/httpmethods.html
-		
-	// https://restfulapi.net/
 }
